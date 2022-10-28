@@ -9,6 +9,21 @@ The demo Scene is based on the [3D scene](<(https://bevyengine.org/examples/3d/3
 - `main.rs` allows unused definitions
 - Added `LogDiagnosticsPlugin`
 - Added `FrameTimeDiagnosticsPlugin`
+- Positions window on `WindowPosition::Centered(MonitorSelection::Number(1))`
 - System to rotate the cube
 
 The repository is meant to be a template for future Bevy projects.
+
+## Installation and usage
+
+To install run the following commands in terminal:
+
+```
+git clone https://github.com/synec/bevy-playground.git
+cd bevy-playground
+cargo run
+```
+
+I recommend [cargo-watch](https://crates.io/crates/cargo-watch) for development.
+
+Install with `cargo install cargo-watch` and run project via `cargo watch -x run` to restart on code changes.
