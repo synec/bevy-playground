@@ -1,5 +1,7 @@
 # bevy-playground
 
+![Screenshot](assets/readme/screenshot.png)
+
 My playground for [Bevy](https://bevyengine.org).
 
 Setup follows the recommendations of [Bevy book](https://bevyengine.org/learn/book/getting-started/setup/) regarding performance optimizations, but does not use dynamic linking.
