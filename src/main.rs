@@ -1,11 +1,14 @@
 #![allow(unused)]
 
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy::window::PresentMode;
 
 #[derive(Component)]
 struct Shape;
+
+#[derive(Component)]
+struct StatsText;
 
 fn main() {
     App::new()
@@ -21,20 +24,16 @@ fn main() {
         .add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_startup_system(setup)
-        .add_system(rotate)
+        .add_system(fps_system)
+        .add_system(rotate_system)
         .run();
-}
-
-fn rotate(mut query: Query<&mut Transform, With<Shape>>, time: Res<Time>) {
-    for mut transform in &mut query {
-        transform.rotate_y(time.delta_seconds() / 2.);
-    }
 }
 
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>,
 ) {
     // plane
     commands.spawn_bundle(PbrBundle {
@@ -66,4 +65,42 @@ fn setup(
         transform: Transform::from_xyz(-0.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
+
+    commands
+        .spawn_bundle(
+            TextBundle::from_sections([TextSection::new(
+                "\nfps: ",
+                TextStyle {
+                    font: asset_server.load("fonts/roboto_mono_for_powerline.ttf"),
+                    font_size: 20.0,
+                    color: Color::rgb(1.0, 1.0, 1.0),
+                },
+            )])
+            .with_style(Style {
+                position_type: PositionType::Absolute,
+                position: UiRect {
+                    top: Val::Px(5.0),
+                    left: Val::Px(5.0),
+                    ..default()
+                },
+                ..default()
+            }),
+        )
+        .insert(StatsText);
+}
+
+fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<StatsText>>) {
+    let mut text = query.single_mut();
+
+    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+        if let Some(average) = fps.average() {
+            text.sections[0].value = format!("{average:.2} fps");
+        }
+    };
+}
+
+fn rotate_system(mut query: Query<&mut Transform, With<Shape>>, time: Res<Time>) {
+    for mut transform in &mut query {
+        transform.rotate_y(time.delta_seconds() / 2.);
+    }
 }

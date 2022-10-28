@@ -10,7 +10,8 @@ The demo Scene is based on the [3D scene](<(https://bevyengine.org/examples/3d/3
 - Added `LogDiagnosticsPlugin`
 - Added `FrameTimeDiagnosticsPlugin`
 - Positions window on `WindowPosition::Centered(MonitorSelection::Number(1))`
-- System to rotate the cube
+- Shows average fps (`fps_system`)
+- Rotates the cube (`rotate_system`)
 
 The repository is meant to be a template for future Bevy projects.
 
