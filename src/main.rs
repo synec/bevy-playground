@@ -12,16 +12,26 @@ struct StatsText;
 
 fn main() {
     App::new()
-        .insert_resource(WindowDescriptor {
-            title: "Bevy playground!".to_string(),
-            width: 1920.,
-            height: 1080.,
-            position: WindowPosition::Centered(MonitorSelection::Number(1)),
-            present_mode: PresentMode::AutoVsync,
-            ..default()
-        })
-        .add_plugins(DefaultPlugins)
-        .add_plugin(LogDiagnosticsPlugin::default())
+        .add_plugins(
+            DefaultPlugins
+                .set(AssetPlugin {
+                    watch_for_changes: true,
+                    ..default()
+                })
+                .set(WindowPlugin {
+                    window: WindowDescriptor {
+                        title: "Bevy playground!".to_string(),
+                        width: 1920.,
+                        height: 1080.,
+                        monitor: MonitorSelection::Index(1),
+                        position: WindowPosition::Centered,
+                        present_mode: PresentMode::AutoVsync,
+                        ..default()
+                    },
+                    ..default()
+                }),
+        )
+        // .add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_startup_system(setup)
         .add_system(fps_system)
@@ -36,14 +46,14 @@ fn setup(
     asset_server: Res<AssetServer>,
 ) {
     // plane
-    commands.spawn_bundle(PbrBundle {
+    commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Plane { size: 10.0 })),
         material: materials.add(Color::rgb(0.9, 0.5, 0.3).into()),
         ..default()
     });
     // cube
     commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
             material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
@@ -51,7 +61,7 @@ fn setup(
         })
         .insert(Shape);
     // light
-    commands.spawn_bundle(PointLightBundle {
+    commands.spawn(PointLightBundle {
         point_light: PointLight {
             intensity: 1500.0,
             shadows_enabled: true,
@@ -61,13 +71,13 @@ fn setup(
         ..default()
     });
     // camera
-    commands.spawn_bundle(Camera3dBundle {
+    commands.spawn(Camera3dBundle {
         transform: Transform::from_xyz(-0.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
 
     commands
-        .spawn_bundle(
+        .spawn(
             TextBundle::from_sections([TextSection::new(
                 "\nfps: ",
                 TextStyle {
